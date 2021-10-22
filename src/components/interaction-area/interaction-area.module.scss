@@ -1,0 +1,50 @@
+.interactionArea {
+  grid-area: ia;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  .inputPreview {
+    word-wrap: break-word;
+    border-bottom: 2px solid #222;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    color: #0e244f;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 48px;
+    margin-bottom: 40px;
+    overflow: hidden;
+  }
+
+  input {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    font-style: italic;
+    font-size: 16px;
+    word-wrap: break-word;
+    background-color: transparent;
+    outline: none;
+    border-bottom: 2px solid #222;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    padding: 0 1rem;
+    width: 40%;
+    max-width: 40%;
+    height: 40px;
+    overflow: hidden;
+  }
+
+  .infoTitle {
+    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 400;
+    color: #333;
+    margin-top: 14px;
+  }
+}

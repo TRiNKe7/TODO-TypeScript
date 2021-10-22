@@ -1,12 +1,11 @@
 .todoWrapper {
+  position: relative;
   max-width: 100%;
   display: grid;
-  position: relative;
-  grid-template-rows: 80px 1fr;
-  grid-template-areas: "sb sb"
-  "tdl ia";
+  grid-template-areas: "tdl ia";
   grid-template-columns: 2fr 3fr;
   min-height: 100vh;
+  height: 100vh;
   box-sizing: border-box;
   background-color: #fff1cb;
 

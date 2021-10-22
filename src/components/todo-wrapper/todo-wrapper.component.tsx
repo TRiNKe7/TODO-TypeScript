@@ -1,25 +1,37 @@
 import React, { ChangeEvent, MouseEvent, useCallback, useState } from "react";
 import styles from "./todo-wrapper.module.scss";
-import TodoList from "../todo-list/todo-list.component";
+import SearchBarModalWindow from "../search-bar-modal-window/search-bar-modal-window.component";
 import InteractionArea from "../interaction-area/interaction-area.component";
-import SearchBar from "../search-bar/search-bar.component";
+import TodoList from "../todo-list/todo-list.component";
+import {fakeTodoData} from "../../__mocks__/search-result-data";
 
 export interface DataInterface {
   id: number;
   title: string;
 }
 
-const TODO_LIST_TITLE = "There's your TO-DO List";
+const TODO_LIST_TITLE = "There's your TO-DO List:";
 const TODO_LIST_CLEAN_BUTTON_AREA_TITLE = "Wash me please!";
 const INTERACTION_AREA_INFO_TITLE_TEXT = `Press "Enter" to add this TO-DO`;
-const SEARCH_BAR_BUTTON_TEXT = "Search TO-DO";
-const EMPTY_TODO_LIST_BOX_TITLE = "Waiting for TO-DO..."
+const SEARCH_BAR_BUTTON_TEXT = "Search";
+const EMPTY_TODO_LIST_BOX_TITLE = "Waiting for TO-DO...";
 
 const TodoWrapper = () => {
+  const [
+    isSearchBarModalWindowOpen,
+    setIsSearchBarModalWindowOpen,
+  ] = useState<boolean>(false);
   const [todoList, setTodoList] = useState<DataInterface[]>([]);
+  const [searchResult, setSearchResult] = useState<DataInterface[]>(fakeTodoData);
   const [value, setValue] = useState<string>("");
   const [searchBarValue, setSearchBarValue] = useState<string>("");
-  const [searchResult, setSearchResult] = useState<DataInterface[]>([{id: 1, title: "suka"}])
+
+  const handleShowingModalWindowCallBack = useCallback(
+    (event: MouseEvent<HTMLButtonElement>) => {
+      setIsSearchBarModalWindowOpen((prevState) => !prevState);
+    },
+    []
+  );
 
   const handleInputValue = useCallback(
     ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +47,6 @@ const TodoWrapper = () => {
     []
   );
 
-
   const handleAddTodoValueInList = useCallback(() => {
     if (value.length > 0) {
       setTodoList((prev) => prev.concat([{ id: Math.random(), title: value }]));
@@ -45,21 +56,10 @@ const TodoWrapper = () => {
 
   const handleSearchingProcess = useCallback(() => {
     if (searchBarValue.length > 0) {
-      setSearchResult(
-        todoList.filter((el) => {
-          return (
-            el.title
-              .split("", searchBarValue.length)
-              .slice()
-              .map((el) => el.toLowerCase())
-              .join("") ===
-            searchBarValue
-              .split("")
-              .map((el) => el.toLowerCase())
-              .join("")
-          );
-        })
-      );
+      let resultUpdate = todoList.filter((el) => {
+        return el.title.toLowerCase().search(searchBarValue.toLowerCase()) > 0;
+      });
+      setSearchResult((prevState) => [...prevState, ...resultUpdate]);
     }
   }, [searchBarValue, todoList]);
 
@@ -80,13 +80,16 @@ const TodoWrapper = () => {
 
   return (
     <div className={`${styles.todoWrapper}`}>
-      <SearchBar
-        value={searchBarValue}
-        handleInputCallBack={handleSearchBarValue}
-        handleSearchButtonCallBack={handleSearchingProcess}
-        searchButtonText={SEARCH_BAR_BUTTON_TEXT}
-        searchResult={searchResult}
-      />
+      {isSearchBarModalWindowOpen && (
+        <SearchBarModalWindow
+          handleShowingModalWindowCallBack={handleShowingModalWindowCallBack}
+          searchBarValue={searchBarValue}
+          handleInputCallBack={handleSearchBarValue}
+          handleSearchButtonCallBack={handleSearchingProcess}
+          searchButtonText={SEARCH_BAR_BUTTON_TEXT}
+          searchResult={searchResult}
+        />
+      )}
       <TodoList
         title={TODO_LIST_TITLE}
         emptyBoxTitle={EMPTY_TODO_LIST_BOX_TITLE}
@@ -94,6 +97,7 @@ const TodoWrapper = () => {
         cleanButtonTitle={TODO_LIST_CLEAN_BUTTON_AREA_TITLE}
         cleanButtonCallback={cleanAllList}
         deleteListElementCallBack={deleteListElement}
+        handleShowingModalWindowCallBack={handleShowingModalWindowCallBack}
       />
       <InteractionArea
         inputValue={value}
