@@ -4,7 +4,7 @@ import styles from "./search-bar-modal-window.module.scss";
 
 interface SearchBarModalWindowProps {
   handleShowingModalWindowCallBack: (
-    event: MouseEvent<HTMLButtonElement>
+    event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLElement>
   ) => void;
   searchBarValue: string;
   searchResult: DataInterface[];
@@ -24,13 +24,7 @@ const SearchBarModalWindow: FC<SearchBarModalWindowProps> = ({
   // const searchForTodoViaKeyDown = (event: KeyboardEvent) =>
   //   handleSearchButtonCallBack();
   return (
-    <div className={styles.ModalWindowBox}>
-      <button
-        className={`${styles.CloseModalWindowButton}`}
-        onClick={handleShowingModalWindowCallBack}
-      >
-        X
-      </button>
+    <div onClick={handleShowingModalWindowCallBack} className={styles.ModalWindowBox}>
       <div className={styles.searchBox}>
         <div className={styles.searchBarContainer}>
           <input

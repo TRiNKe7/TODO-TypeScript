@@ -27,7 +27,7 @@ const TodoWrapper = () => {
   const [searchBarValue, setSearchBarValue] = useState<string>("");
 
   const handleShowingModalWindowCallBack = useCallback(
-    (event: MouseEvent<HTMLButtonElement>) => {
+    (event: MouseEvent<HTMLButtonElement> | MouseEvent<HTMLElement>) => {
       setIsSearchBarModalWindowOpen((prevState) => !prevState);
     },
     []

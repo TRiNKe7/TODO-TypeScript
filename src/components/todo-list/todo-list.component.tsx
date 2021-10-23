@@ -2,6 +2,8 @@ import React, { FC, MouseEvent } from "react";
 import styles from "./todo-list.module.scss";
 import { DataInterface } from "../todo-wrapper/todo-wrapper.component";
 import TodoListItem from "../todo-list-item/todo-list-item.component";
+import { useDrag } from "react-dnd";
+import TodoListDroppableWrapper from "../todo-list-droppable-wrapper/todo-list-droppable-wrapper.component";
 
 interface Props {
   title: string;
@@ -24,9 +26,18 @@ const TodoList: FC<Props> = ({
   deleteListElementCallBack,
   handleShowingModalWindowCallBack,
 }) => {
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: "TO-DO",
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+  }));
   return (
     <div className={styles.todoList}>
-      <button className={styles.SearchTodoButton} onClick={handleShowingModalWindowCallBack}>Search for TO-DO</button>
+      <button
+        className={styles.SearchTodoButton}
+        onClick={handleShowingModalWindowCallBack}
+      >
+        Search for TO-DO
+      </button>
       <div className={styles.header}>
         <span>{title}</span>
       </div>
@@ -34,18 +45,26 @@ const TodoList: FC<Props> = ({
         <div className={styles.todoDataBox}>
           {data.length > 0 ? (
             data.map(({ id, title }) => (
-              <TodoListItem
-                key={id}
-                className={`${styles.listElement}`}
-                title={title}
-                titleClassName={`${styles.itemTitle}`}
+              <TodoListDroppableWrapper
+                itemId={id}
+                className={`${styles.itemWrapper}`}
                 deleteButtonClassName={`${styles.itemDeleteButton}`}
                 onClick={deleteListElementCallBack}
-                draggingClassName={`${styles.draggingItem}`}
+                children={
+                  <TodoListItem
+                    drag={drag}
+                    key={id}
+                    className={`${styles.listElement}`}
+                    title={title}
+                    titleClassName={`${styles.itemTitle}`}
+                    draggingClassName={`${styles.draggingItem}`}
+                    isDragging={isDragging}
+                  />
+                }
               />
             ))
           ) : (
-            <div className={`${styles.listElement} ${styles.emptyBoxTitle}`}>
+            <div className={styles.listElement}>
               {emptyBoxTitle}
             </div>
           )}
