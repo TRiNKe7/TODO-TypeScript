@@ -1,21 +1,26 @@
-import React, {ChangeEvent, FC} from 'react'
-
+import React, {ChangeEvent, FC, KeyboardEvent} from "react";
+import styles from "./interaction-area.module.scss";
+import PlusIcon from "../../assets/plus-icon";
 
 interface Props {
-    inputValue: string
-    handleInputCallBack: (event: ChangeEvent<HTMLInputElement>) => void
-    addButton: () => void;
-    addButtonText: string;
+  inputValue: string;
+  handleInputCallBack: (event: ChangeEvent<HTMLInputElement>) => void;
+  addButton: () => void;
+  addButtonText: string;
 }
-console.log('1')
-    const InteractionArea:FC<Props> = ({inputValue, handleInputCallBack, addButton, addButtonText}) => {
 
-    return(
-        <div>
-            <input value={inputValue} onChange={handleInputCallBack}/>
-            <button onClick={addButton}>{addButtonText}</button>
-        </div>
-    )
+const InteractionArea: FC<Props> = ({inputValue, handleInputCallBack, addButton, addButtonText}) => {
+  const handleTodoAddingOnKeyDown = (event: KeyboardEvent) => {
+    if (event.code === "Enter") {
+      addButton();
+    }
+  };
+  return (
+    <div className={styles.Container}>
+      <input onKeyPress={handleTodoAddingOnKeyDown} value={inputValue} onChange={handleInputCallBack}/>
+      <button onClick={addButton}><PlusIcon/></button>
+    </div>
+  )
 }
 
 export default InteractionArea

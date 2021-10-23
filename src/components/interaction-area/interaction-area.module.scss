@@ -1,0 +1,40 @@
+.Container {
+  display: flex;
+  justify-content: center;
+  width: 40%;
+  margin: 0 auto;
+  height: fit-content;
+
+  input {
+    box-sizing: border-box;
+    width: 100%;
+    margin-right: 2rem;
+    padding: 10px;
+    height: 48px;
+    outline: none;
+    border-radius: 12px;
+    border: 2px solid #222;
+    background-color: white;
+    font-size: 18px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 500;
+  }
+
+  button {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    color: #222222;
+    box-sizing: border-box;
+    font-size: 20px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 500;
+    border: 2px solid #222222;
+    border-radius: 10px;
+
+    &:active {
+      border-top: 4px solid #222222;
+    }
+  }
+}
