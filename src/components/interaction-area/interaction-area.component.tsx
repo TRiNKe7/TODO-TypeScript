@@ -7,7 +7,7 @@ interface Props {
     addButton: () => void;
     addButtonText: string;
 }
-
+console.log('1')
     const InteractionArea:FC<Props> = ({inputValue, handleInputCallBack, addButton, addButtonText}) => {
 
     return(
