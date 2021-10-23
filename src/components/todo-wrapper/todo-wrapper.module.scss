@@ -1,12 +1,5 @@
-.todoWrapper {
-  position: relative;
-  max-width: 100%;
-  display: grid;
-  grid-template-areas: "tdl ia";
-  grid-template-columns: 2fr 3fr;
-  min-height: 100vh;
-  height: 100vh;
-  box-sizing: border-box;
-  background-color: #fff1cb;
+.todoWrapper{
+  width: 100%;
+  display: flex;
 
 }
