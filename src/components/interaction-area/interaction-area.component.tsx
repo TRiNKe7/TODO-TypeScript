@@ -1,6 +1,6 @@
 import React, {ChangeEvent, FC, KeyboardEvent} from "react";
 import styles from "./interaction-area.module.scss";
-import PlusIcon from "../../assets/plus-icon";
+import PlusIcon from "../../assets/icons/plus-icon";
 
 interface Props {
   inputValue: string;
@@ -9,9 +9,9 @@ interface Props {
   addButtonText: string;
 }
 
-const InteractionArea: FC<Props> = ({inputValue, handleInputCallBack, addButton, addButtonText}) => {
+const InteractionArea: FC<Props> = ({inputValue, handleInputCallBack, addButton}) => {
   const handleTodoAddingOnKeyDown = (event: KeyboardEvent) => {
-    if (event.code === "Enter") {
+    if (event.code === "Enter" || event.location === 3) {
       addButton();
     }
   };

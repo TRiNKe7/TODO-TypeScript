@@ -33,6 +33,10 @@
     border: 2px solid #222222;
     border-radius: 10px;
 
+    svg {
+      fill: #444444;
+    }
+
     &:active {
       border-top: 4px solid #222222;
     }

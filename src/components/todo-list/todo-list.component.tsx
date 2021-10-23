@@ -1,7 +1,7 @@
 import React, { FC, MouseEvent } from "react";
 import styles from "./todo-list.module.scss";
 import { DataInterface } from "../todo-wrapper/todo-wrapper.component";
-import DeleteIcon from "../../assets/delete-icon";
+import DeleteIcon from "../../assets/icons/delete-icon";
 
 interface Props {
   title: string;
