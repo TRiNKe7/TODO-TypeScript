@@ -1,52 +1,147 @@
-import React, {ChangeEvent, MouseEvent, useCallback, useState} from 'react';
-import styles from './todo-wrapper.module.scss'
+import React, { ChangeEvent, MouseEvent, useCallback, useState } from "react";
+import styles from "./todo-wrapper.module.scss";
 import TodoList from "../todo-list/todo-list.component";
 import InteractionArea from "../interaction-area/interaction-area.component";
+import { temporaryToDoData } from "../../__mocks__/fake-todo-data";
+import SearchIcon from "../../assets/icons/search-icon";
+import Search from "../../shared/components/search-bar/search-bar.component";
+import CloseIcon from "../../assets/icons/close-icon";
+import { DropResult } from "react-beautiful-dnd";
 
-
-export interface DataInterface{
-    id: number;
-    title: string;
+export interface DataInterface {
+  id: string;
+  title: string;
 }
 
-const TODO_LIST_TITLE = 'GRISHA LIST!!!'
-const TODO_LIST_CLEAN_BUTTON_AREA_TITLE = "ПОМОЙ МЕНЯ!"
-const INTERACTION_AREA_ADD_BUTTON_TEXT = 'Добавить'
+const TODO_LIST_TITLE = `There's your To-Do list:`;
+const TODO_LIST_CLEAN_BUTTON_AREA_TITLE = "Delete all";
+const INTERACTION_AREA_ADD_BUTTON_TEXT = "Add";
+const RESULT_BOX_WAITING_TEXT = "Nothing was found...";
 
 const TodoWrapper = () => {
-    const [todoList, setTodoList] = useState<DataInterface[]>([])
-    const [value, setValue] = useState<string>('');
+  const [todoList, setTodoList] = useState<DataInterface[]>(temporaryToDoData);
+  const [value, setValue] = useState<string>("");
 
-    const handleInputValue = useCallback(({target}: ChangeEvent<HTMLInputElement>) => {
-            setValue(target.value);
-        }
-        , [])
+  // To-Do List Functionality
 
+  const handleInputValue = useCallback(
+    ({ target }: ChangeEvent<HTMLInputElement>) => {
+      setValue(target.value);
+    },
+    []
+  );
 
-    const handleAddTodoValueInList = useCallback(() => {
-        if(value.length > 0 ){
-            setTodoList(prev => prev.concat([{id: Math.random(), title: value}]))
-            setValue('')
-        }
+  const handleAddTodoValueInList = useCallback(() => {
+    if (value.length > 0) {
+      setTodoList((prev) =>
+        prev.concat([{ id: (todoList.length + 1).toString(), title: value }])
+      );
+      setValue("");
+    }
+  }, [value, todoList.length]);
 
-    }, [value])
+  const cleanAllList = useCallback(() => {
+    setTodoList([]);
+  }, []);
 
-    const cleanAllList = useCallback(() => {
-            setTodoList([])
-    }, [])
+  const deleteListElement = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      setTodoList(
+        todoList.filter(
+          ({ id }) => id !== (event.target as HTMLButtonElement).id
+        )
+      );
+    },
+    [todoList]
+  );
 
-    const deleteListElement = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+  // SearchBar Functionality
 
-        setTodoList(todoList.filter(({id}) => id !== +(event.target as HTMLButtonElement).id))
-    }, [todoList])
+  const [searchBarActive, setSearchBarActive] = useState<boolean>(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [searchResults, setSearchResults] = useState<DataInterface[]>([]);
 
-    return(
-        <div className={styles.todoWrapper}>
-            <TodoList title={TODO_LIST_TITLE} data={todoList} cleanButtonTitle={TODO_LIST_CLEAN_BUTTON_AREA_TITLE} cleanButtonCallback={cleanAllList} deleteListElementCallBack={deleteListElement}/>
-            <InteractionArea inputValue={value} handleInputCallBack={handleInputValue} addButton={handleAddTodoValueInList} addButtonText={INTERACTION_AREA_ADD_BUTTON_TEXT}/>
-        </div>
-    )
+  const handleSearchInputValue = useCallback(
+    ({ target }: ChangeEvent<HTMLInputElement>) => {
+      setSearchValue(target.value);
+      setSearchResults(
+        todoList.filter(({ title }) =>
+          title.toLowerCase().includes(searchValue.toLowerCase())
+        )
+      );
+    },
+    [todoList, searchValue]
+  );
 
-}
+  const handleToggleSearchBoxView = () => {
+    setSearchBarActive((prevState) => !prevState);
+  };
 
-export default TodoWrapper
+  // Drag&Drop Functionality
+
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      const { source, destination } = result;
+      if (!destination) return;
+
+      const items = todoList;
+      const [newOrder] = items.splice(source.index, 1);
+      items.splice(destination.index, 0, newOrder);
+
+      setTodoList(items);
+    },
+    [todoList]
+  );
+
+  return (
+    <div className={styles.todoWrapper}>
+      {!searchBarActive && (
+        <button
+          onClick={handleToggleSearchBoxView}
+          className={`${styles.openSearchBar}`}
+        >
+          <SearchIcon />
+        </button>
+      )}
+      {searchBarActive && (
+        <Search
+          searchContainerClassName={`${styles.searchContainer}`}
+          buttonClassName={styles.searchContainerButton}
+          buttonChildren={<CloseIcon />}
+          buttonOnClick={handleToggleSearchBoxView}
+          searchBoxClassName={`${styles.searchBox}`}
+          searchBoxProps={{
+            value: searchValue,
+            onChange: handleSearchInputValue,
+          }}
+          resultBoxClassName={`${styles.resultBox}`}
+          resultData={searchResults}
+          resultItemClassName={`${styles.resultItem}`}
+          resultBoxWaitingText={RESULT_BOX_WAITING_TEXT}
+        />
+      )}
+      <InteractionArea
+        inputValue={value}
+        handleInputCallBack={handleInputValue}
+        addButton={handleAddTodoValueInList}
+        addButtonText={INTERACTION_AREA_ADD_BUTTON_TEXT}
+      />
+      <TodoList
+        title={TODO_LIST_TITLE}
+        data={todoList}
+        cleanButtonTitle={TODO_LIST_CLEAN_BUTTON_AREA_TITLE}
+        cleanButtonCallback={cleanAllList}
+        deleteListElementCallBack={deleteListElement}
+        onDragEnd={onDragEnd}
+        // dragStartHandler={dragStartHandler}
+        // dragEndHandler={dragEndHandler}
+        // dragOverHandler={dragOverHandler}
+        // dropHandler={dropHandler}
+        // sortTodoList={sortTodoList}
+        // callBackDraggingClassName={callBackDraggingClassName}
+      />
+    </div>
+  );
+};
+
+export default TodoWrapper;
