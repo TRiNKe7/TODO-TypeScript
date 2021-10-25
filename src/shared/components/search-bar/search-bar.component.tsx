@@ -31,7 +31,6 @@ const Search: FC<SearchProps> = ({
   resultItemClassName,
   resultBoxWaitingText,
 }) => {
-  debugger;
   return (
     <div className={searchContainerClassName}>
       <button onClick={buttonOnClick} className={buttonClassName}>

@@ -6,9 +6,10 @@ import { temporaryToDoData } from "../../__mocks__/fake-todo-data";
 import SearchIcon from "../../assets/icons/search-icon";
 import Search from "../../shared/components/search-bar/search-bar.component";
 import CloseIcon from "../../assets/icons/close-icon";
+import { DropResult } from "react-beautiful-dnd";
 
 export interface DataInterface {
-  id: number;
+  id: string;
   title: string;
 }
 
@@ -18,11 +19,47 @@ const INTERACTION_AREA_ADD_BUTTON_TEXT = "Add";
 const RESULT_BOX_WAITING_TEXT = "Nothing was found...";
 
 const TodoWrapper = () => {
+  const [todoList, setTodoList] = useState<DataInterface[]>(temporaryToDoData);
+  const [value, setValue] = useState<string>("");
+
+  // To-Do List Functionality
+
+  const handleInputValue = useCallback(
+    ({ target }: ChangeEvent<HTMLInputElement>) => {
+      setValue(target.value);
+    },
+    []
+  );
+
+  const handleAddTodoValueInList = useCallback(() => {
+    if (value.length > 0) {
+      setTodoList((prev) =>
+        prev.concat([{ id: (todoList.length + 1).toString(), title: value }])
+      );
+      setValue("");
+    }
+  }, [value, todoList.length]);
+
+  const cleanAllList = useCallback(() => {
+    setTodoList([]);
+  }, []);
+
+  const deleteListElement = useCallback(
+    (event: MouseEvent<HTMLDivElement>) => {
+      setTodoList(
+        todoList.filter(
+          ({ id }) => id !== (event.target as HTMLButtonElement).id
+        )
+      );
+    },
+    [todoList]
+  );
+
+  // SearchBar Functionality
+
   const [searchBarActive, setSearchBarActive] = useState<boolean>(false);
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState<DataInterface[]>([]);
-  const [todoList, setTodoList] = useState<DataInterface[]>(temporaryToDoData);
-  const [value, setValue] = useState<string>("");
 
   const handleSearchInputValue = useCallback(
     ({ target }: ChangeEvent<HTMLInputElement>) => {
@@ -40,31 +77,18 @@ const TodoWrapper = () => {
     setSearchBarActive((prevState) => !prevState);
   };
 
-  const handleInputValue = useCallback(
-    ({ target }: ChangeEvent<HTMLInputElement>) => {
-      setValue(target.value);
-    },
-    []
-  );
+  // Drag&Drop Functionality
 
-  const handleAddTodoValueInList = useCallback(() => {
-    if (value.length > 0) {
-      setTodoList((prev) => prev.concat([{ id: Math.random(), title: value }]));
-      setValue("");
-    }
-  }, [value]);
+  const onDragEnd = useCallback(
+    (result: DropResult) => {
+      const { source, destination } = result;
+      if (!destination) return;
 
-  const cleanAllList = useCallback(() => {
-    setTodoList([]);
-  }, []);
+      const items = todoList;
+      const [newOrder] = items.splice(source.index, 1);
+      items.splice(destination.index, 0, newOrder);
 
-  const deleteListElement = useCallback(
-    (event: MouseEvent<HTMLDivElement>) => {
-      setTodoList(
-        todoList.filter(
-          ({ id }) => id !== +(event.target as HTMLButtonElement).id
-        )
-      );
+      setTodoList(items);
     },
     [todoList]
   );
@@ -108,6 +132,13 @@ const TodoWrapper = () => {
         cleanButtonTitle={TODO_LIST_CLEAN_BUTTON_AREA_TITLE}
         cleanButtonCallback={cleanAllList}
         deleteListElementCallBack={deleteListElement}
+        onDragEnd={onDragEnd}
+        // dragStartHandler={dragStartHandler}
+        // dragEndHandler={dragEndHandler}
+        // dragOverHandler={dragOverHandler}
+        // dropHandler={dropHandler}
+        // sortTodoList={sortTodoList}
+        // callBackDraggingClassName={callBackDraggingClassName}
       />
     </div>
   );
